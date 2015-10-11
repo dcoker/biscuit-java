@@ -1,0 +1,42 @@
+group 'com.wagmorelabs'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'findbugs'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+findbugs {
+    effort = "max"
+    reportLevel = "high"
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+        force 'org.scala-lang:scala-library:2.10.5'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.amazonaws:aws-java-sdk-kms:1.10.26'
+    compile 'com.github.emstlk:nacl4s_2.10:1.0.0'
+    compile 'org.yaml:snakeyaml:1.16'
+    testCompile 'junit:junit:4.11'
+}
