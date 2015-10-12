@@ -1,4 +1,4 @@
-Secrets (Java)
+# Secrets (Java)
 
 [![Build Status](https://travis-ci.org/dcoker/secrets-java.svg)](https://travis-ci.org/dcoker/secrets-java)
 
