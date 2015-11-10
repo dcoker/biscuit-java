@@ -99,7 +99,7 @@ public class Secrets {
                 throw new KeyStoreException("Unrecognized key manager: " +
                         Field.KEY_MANAGER.get(entry));
             }
-            key = keyManager.decrypt(decodeBase64(Field.KEY_CIPHERTEXT.get(entry)));
+            key = keyManager.decrypt(decodeBase64(Field.KEY_CIPHERTEXT.get(entry)), name);
         }
         String ciphertext = Field.CIPHERTEXT.get(entry);
         return algo.decrypt(key, decodeBase64(ciphertext));

@@ -9,9 +9,10 @@ public interface KeyManager {
      * information already embedded in the keyCiphertext.
      *
      * @param keyCiphertext
+     * @param secretId The name of the secret being decrypted.
      * @return
      */
-    byte[] decrypt(byte[] keyCiphertext);
+    byte[] decrypt(byte[] keyCiphertext, String secretId);
 
     /**
      * Returns the string used in the secret store to identify this key management service.
