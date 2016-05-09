@@ -1,11 +1,12 @@
 package com.wagmorelabs.secrets;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit test for KmsKeyManager.
@@ -20,7 +21,7 @@ public class KmsKeyManagerTest {
         arns.put("arn:aws:kms:us-west-1:123456789012:alias/biscuit-x", "us-west-1");
         arns.put("alias/biscuit-x", null);
         for (Map.Entry<String, String> entry : arns.entrySet()) {
-            Assert.assertEquals(entry.getValue(), KmsKeyManager.getRegionFromKeyId(entry.getKey()));
+            assertEquals(entry.getValue(), KmsKeyManager.getRegionFromKeyId(entry.getKey()));
         }
     }
 }

@@ -39,7 +39,7 @@ public class AesGcm256Test {
 
     @Test
     public void testDecryption() throws GeneralSecurityException {
-        for (String[] testCase: aesGcmTests) {
+        for (String[] testCase : aesGcmTests) {
             byte[] key = parseHexBinary(testCase[KEY]);
             byte[] plaintext = parseHexBinary(testCase[PLAINTEXT]);
             byte[] ciphertext = parseHexBinary(testCase[RESULT] + testCase[NONCE]);

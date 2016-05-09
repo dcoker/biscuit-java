@@ -1,6 +1,5 @@
 package com.wagmorelabs.secrets;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.crypto.Cipher;
@@ -20,41 +19,41 @@ public class SecretsTests {
     @Test
     public void emptyCiphertext() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
-        Assert.assertNull(secrets.get("404"));
-        Assert.assertNull(secrets.getString("404"));
+        assertNull(secrets.get("404"));
+        assertNull(secrets.getString("404"));
         secrets.read(new StringReader("k:\n- algorithm: none\n  ciphertext: \"\""));
         secrets.read(new StringReader("no_ciphertext:\n- algorithm: none\n"));
-        Assert.assertNull(secrets.get("404"));
-        Assert.assertNull(secrets.getString("404"));
-        Assert.assertNotNull(secrets.get("no_ciphertext"));
-        Assert.assertNotNull(secrets.getString("no_ciphertext"));
-        Assert.assertNotNull(secrets.get("k"));
-        Assert.assertNotNull(secrets.getString("k"));
+        assertNull(secrets.get("404"));
+        assertNull(secrets.getString("404"));
+        assertNotNull(secrets.get("no_ciphertext"));
+        assertNotNull(secrets.getString("no_ciphertext"));
+        assertNotNull(secrets.get("k"));
+        assertNotNull(secrets.getString("k"));
     }
 
     @Test
     public void missingKeys() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
-        Assert.assertNull(secrets.get("404"));
+        assertNull(secrets.get("404"));
         secrets.read(new StringReader("k:\n- algorithm: none\n  ciphertext: aGVsbG8K"));
-        Assert.assertNull(secrets.get("404"));
-        Assert.assertNull(secrets.getString("404"));
-        Assert.assertNotNull(secrets.get("k"));
-        Assert.assertNotNull(secrets.getString("k"));
+        assertNull(secrets.get("404"));
+        assertNull(secrets.getString("404"));
+        assertNotNull(secrets.get("k"));
+        assertNotNull(secrets.getString("k"));
     }
 
     @Test
     public void testUnknownAlgorithm() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
         secrets.read(new StringReader("k:\n- algorithm: 3des\n  ciphertext: aGVsbG8K"));
-        Assert.assertNull(secrets.get("k"));
+        assertNull(secrets.get("k"));
     }
 
     @Test
     public void testUnknownKeyManager() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
         secrets.read(new StringReader("k:\n- key_manager: kms\n  algorithm: secretbox\n"));
-        Assert.assertNull(secrets.get("k"));
+        assertNull(secrets.get("k"));
     }
 
     @Test
