@@ -35,8 +35,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.amazonaws:aws-java-sdk-kms:1.10.26'
+    compile 'com.amazonaws:aws-java-sdk-kms:1.10.76'
     compile 'com.github.emstlk:nacl4s_2.10:1.0.0'
-    compile 'org.yaml:snakeyaml:1.16'
+    compile 'org.yaml:snakeyaml:1.17'
     testCompile 'junit:junit:4.11'
 }
