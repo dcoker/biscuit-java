@@ -1,4 +1,4 @@
-package com.wagmorelabs.secrets;
+package com.wagmorelabs.biscuit;
 
 /**
  * KeyManager wraps a key management service.

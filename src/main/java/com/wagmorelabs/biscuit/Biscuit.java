@@ -1,4 +1,4 @@
-package com.wagmorelabs.secrets;
+package com.wagmorelabs.biscuit;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -20,23 +20,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Secrets reads encrypted values from a file and decrypts them with the help of a key management
+ * Biscuit reads encrypted values from a file and decrypts them with the help of a key management
  * service.
  */
-public class Secrets {
+public class Biscuit {
 
     private final Map<String, KeyManager> keyManagers;
     private final Map<String, Algorithm> algorithms;
     private final Map<String, Collection<Map<String, String>>> values = new HashMap<>();
-    private static final Logger logger = Logger.getLogger(Secrets.class.getName());
+    private static final Logger logger = Logger.getLogger(Biscuit.class.getName());
 
     /**
-     * Constructor. See {@link com.wagmorelabs.secrets.Secrets.Builder}.
+     * Constructor. See {@link Biscuit.Builder}.
      *
      * @param keyManagers
      * @param algorithms
      */
-    private Secrets(Map<String, KeyManager> keyManagers, Map<String, Algorithm> algorithms) {
+    private Biscuit(Map<String, KeyManager> keyManagers, Map<String, Algorithm> algorithms) {
         this.keyManagers = keyManagers;
         this.algorithms = algorithms;
     }
@@ -160,7 +160,7 @@ public class Secrets {
     }
 
     /**
-     * Builder for the Secrets class.
+     * Builder for the Biscuit class.
      */
     public static class Builder {
         private final Map<String, KeyManager> keyManagers = new HashMap<>();
@@ -200,8 +200,8 @@ public class Secrets {
          *
          * @return
          */
-        public Secrets build() {
-            return new Secrets(keyManagers, algorithms);
+        public Biscuit build() {
+            return new Biscuit(keyManagers, algorithms);
         }
     }
 }

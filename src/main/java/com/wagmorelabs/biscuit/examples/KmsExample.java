@@ -1,12 +1,12 @@
-package com.wagmorelabs.secrets.examples;
+package com.wagmorelabs.biscuit.examples;
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMSClient;
-import com.wagmorelabs.secrets.KeyManager;
-import com.wagmorelabs.secrets.KmsKeyManager;
-import com.wagmorelabs.secrets.Secrets;
+import com.wagmorelabs.biscuit.Biscuit;
+import com.wagmorelabs.biscuit.KeyManager;
+import com.wagmorelabs.biscuit.KmsKeyManager;
 
 import javax.crypto.Cipher;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * KmsExample demonstrates how to configure an AWS KMS client for use with Secrets.
+ * KmsExample demonstrates how to configure an AWS KMS client for use with Biscuit.
  */
 public class KmsExample {
     public static void main(String[] args) throws IOException, GeneralSecurityException {
@@ -32,13 +32,13 @@ public class KmsExample {
                 Region.getRegion(Regions.fromName(region)).createClient(AWSKMSClient.class, credentials, null),
                 regionHint);
 
-        Secrets secrets = new Secrets.Builder()
+        Biscuit biscuit = new Biscuit.Builder()
                 .withKeyManager(kmsKeyManager)
                 .build();
-        secrets.readFile("secrets.yml");
+        biscuit.readFile("secrets.yml");
 
         String secretName = "pg_password";
-        String plaintext = secrets.getString(secretName);
+        String plaintext = biscuit.getString(secretName);
         System.out.printf("%s=%s%n", secretName, plaintext);
     }
 

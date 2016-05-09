@@ -1,8 +1,8 @@
-# Secrets (Java)
+# Biscuit (Java)
 
-[![Build Status](https://travis-ci.org/dcoker/secrets-java.svg)](https://travis-ci.org/dcoker/secrets-java)
+[![Build Status](https://travis-ci.org/dcoker/biscuit-java.svg)](https://travis-ci.org/dcoker/biscuit-java)
 
-Secrets is a mechanism for securely managing secrets used in AWS deployments.
-
-This repository contains code for reading secrets encrypted with the [Secret CLI](https://github.com/dcoker/secrets).
+Biscuit provides tooling for securely managing secrets used in AWS
+deployments. This project implements Java code for reading secrets 
+encrypted with the [Biscuit CLI](https://github.com/dcoker/biscuit).
 

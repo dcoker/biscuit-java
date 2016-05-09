@@ -1,4 +1,4 @@
-package com.wagmorelabs.secrets;
+package com.wagmorelabs.biscuit;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.kms.AWSKMS;

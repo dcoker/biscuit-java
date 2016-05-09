@@ -1,4 +1,4 @@
-package com.wagmorelabs.secrets;
+package com.wagmorelabs.biscuit;
 
 import com.emstlk.nacl4s.crypto.secretbox.XSalsa20Poly1305;
 
