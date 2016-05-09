@@ -3,18 +3,17 @@ package com.wagmorelabs.secrets;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.crypto.Cipher;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class SecretsTests {
 
@@ -23,8 +22,8 @@ public class SecretsTests {
         Secrets secrets = new Secrets.Builder().build();
         Assert.assertNull(secrets.get("404"));
         Assert.assertNull(secrets.getString("404"));
-        secrets.read(new StringReader("k:\n  algorithm: none\n  ciphertext: \"\""));
-        secrets.read(new StringReader("no_ciphertext:\n  algorithm: none\n"));
+        secrets.read(new StringReader("k:\n- algorithm: none\n  ciphertext: \"\""));
+        secrets.read(new StringReader("no_ciphertext:\n- algorithm: none\n"));
         Assert.assertNull(secrets.get("404"));
         Assert.assertNull(secrets.getString("404"));
         Assert.assertNotNull(secrets.get("no_ciphertext"));
@@ -37,25 +36,25 @@ public class SecretsTests {
     public void missingKeys() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
         Assert.assertNull(secrets.get("404"));
-        secrets.read(new StringReader("k:\n  algorithm: none\n  ciphertext: aGVsbG8K"));
+        secrets.read(new StringReader("k:\n- algorithm: none\n  ciphertext: aGVsbG8K"));
         Assert.assertNull(secrets.get("404"));
         Assert.assertNull(secrets.getString("404"));
         Assert.assertNotNull(secrets.get("k"));
         Assert.assertNotNull(secrets.getString("k"));
     }
 
-    @Test(expected = NoSuchAlgorithmException.class)
+    @Test
     public void testUnknownAlgorithm() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
-        secrets.read(new StringReader("k:\n  algorithm: 3des\n  ciphertext: aGVsbG8K"));
+        secrets.read(new StringReader("k:\n- algorithm: 3des\n  ciphertext: aGVsbG8K"));
         Assert.assertNull(secrets.get("k"));
     }
 
-    @Test(expected = KeyStoreException.class)
+    @Test
     public void testUnknownKeyManager() throws GeneralSecurityException {
         Secrets secrets = new Secrets.Builder().build();
-        secrets.read(new StringReader("k:\n  key_manager: kms\n  algorithm: secretbox\n"));
-        secrets.get("k");
+        secrets.read(new StringReader("k:\n- key_manager: kms\n  algorithm: secretbox\n"));
+        Assert.assertNull(secrets.get("k"));
     }
 
     @Test
@@ -78,6 +77,11 @@ public class SecretsTests {
         Secrets secrets = new Secrets.Builder().build();
         secrets.readFile(getClass().getResource("secrets.json").getFile());
         assertEquals("v-aesgcm256", secrets.getString("launchcodes"));
+    }
+
+    @Test
+    public void verifyUnlimitedJcePolicy() throws NoSuchAlgorithmException {
+        assertTrue(Cipher.getMaxAllowedKeyLength("AES") >= 256);
     }
 
     private void commonTests(Secrets secrets) throws GeneralSecurityException {

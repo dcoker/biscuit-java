@@ -12,8 +12,12 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Secrets reads encrypted values from a file and decrypts them with the help of a key management
@@ -23,7 +27,8 @@ public class Secrets {
 
     private final Map<String, KeyManager> keyManagers;
     private final Map<String, Algorithm> algorithms;
-    private final Map<String, Map<String, String>> values = new HashMap<>();
+    private final Map<String, Collection<Map<String, String>>> values = new HashMap<>();
+    private static final Logger logger = Logger.getLogger(Secrets.class.getName());
 
     /**
      * Constructor. See {@link com.wagmorelabs.secrets.Secrets.Builder}.
@@ -61,12 +66,15 @@ public class Secrets {
     public void read(Reader reader) {
         Yaml yaml = new Yaml();
         @SuppressWarnings("unchecked")
-        Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) yaml.loadAs(reader, Map.class);
+        Map<String, List<Map<String, String>>> map = (Map<String, List<Map<String, String>>>) yaml.loadAs(reader, Map
+                .class);
         // fill in any missing values with blanks to avoid obnoxious nullity tests later
-        for (String key : map.keySet()) {
-            for (Field field : Field.values()) {
-                if (!map.get(key).containsKey(field.toString())) {
-                    map.get(key).put(field.toString(), "");
+        for (Map.Entry<String, List<Map<String, String>>> secret : map.entrySet()) {
+            for (Map<String, String> entry : secret.getValue()) {
+                for (Field field : Field.values()) {
+                    if (!entry.containsKey(field.toString())) {
+                        entry.put(field.toString(), "");
+                    }
                 }
             }
         }
@@ -75,18 +83,28 @@ public class Secrets {
 
     /**
      * get() returns the plaintext as a byte array. Returns null if the secret with the requested
-     * name does not exist.
+     * name does not exist or cannot be decoded.
      *
      * @param name
      * @return
-     * @throws GeneralSecurityException
      */
-    public byte[] get(String name) throws GeneralSecurityException {
-        Map<String, String> entry = values.get(name);
-        if (entry == null) {
+    public byte[] get(String name) {
+        Collection<Map<String, String>> entries = values.get(name);
+        if (entries == null || entries.size() == 0) {
             // entry does not exist
             return null;
         }
+        for (Map<String, String> entry : entries) {
+            try {
+                return decryptOne(name, entry);
+            } catch (GeneralSecurityException e) {
+                logger.log(Level.WARNING, "Exception thrown while decrypting entry", e);
+            }
+        }
+        return null;
+    }
+
+    private byte[] decryptOne(String name, Map<String, String> entry) throws GeneralSecurityException {
         Algorithm algo = algorithms.get(Field.ALGORITHM.get(entry));
         if (null == algo) {
             throw new NoSuchAlgorithmException("Unrecognized algorithm: " +
@@ -99,20 +117,24 @@ public class Secrets {
                 throw new KeyStoreException("Unrecognized key manager: " +
                         Field.KEY_MANAGER.get(entry));
             }
-            key = keyManager.decrypt(decodeBase64(Field.KEY_CIPHERTEXT.get(entry)), name);
+            key = keyManager.decrypt(Field.KEY_ID.get(entry), decodeBase64(Field.KEY_CIPHERTEXT.get(entry)), name);
+            if (null == key) {
+                throw new KeyStoreException("Unable to decrypt key: " + Field.KEY_CIPHERTEXT.get(entry));
+            }
         }
         String ciphertext = Field.CIPHERTEXT.get(entry);
         return algo.decrypt(key, decodeBase64(ciphertext));
     }
 
     /**
-     * getString() returns the plaintext of the secret interpreted as a UTF-8 string.
+     * getString() returns the plaintext of the secret interpreted as a UTF-8 string, or null if the entry does not
+     * exist or could not be decrypted.
      *
      * @param name
      * @return
      * @throws GeneralSecurityException
      */
-    public String getString(String name) throws GeneralSecurityException {
+    public String getString(String name) {
         byte[] plaintext = get(name);
         if (plaintext == null) {
             return null;

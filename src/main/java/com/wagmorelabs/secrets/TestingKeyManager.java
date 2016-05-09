@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 class TestingKeyManager implements KeyManager {
     @Override
-    public byte[] decrypt(byte[] keyCiphertext, String secretId) {
+    public byte[] decrypt(String keyID, byte[] keyCiphertext, String secretName) {
         byte[] plaintextKey = new byte[32];
         Arrays.fill(plaintextKey, (byte) 'x');
         return plaintextKey;
